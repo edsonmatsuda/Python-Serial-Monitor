@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
-    <height>315</height>
+    <width>1114</width>
+    <height>809</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,20 +17,20 @@
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>190</x>
       <y>10</y>
-      <width>121</width>
-      <height>16</height>
+      <width>531</width>
+      <height>41</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>740</x>
       <y>10</y>
-      <width>61</width>
-      <height>16</height>
+      <width>131</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -41,9 +41,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
-      <width>291</width>
-      <height>91</height>
+      <y>70</y>
+      <width>941</width>
+      <height>301</height>
      </rect>
     </property>
    </widget>
@@ -51,40 +51,45 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
-      <width>291</width>
-      <height>91</height>
+      <y>380</y>
+      <width>941</width>
+      <height>301</height>
      </rect>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox_2">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>50</y>
-      <width>81</width>
-      <height>16</height>
+      <x>970</x>
+      <y>90</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox_3">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>90</y>
-      <width>81</width>
-      <height>16</height>
+      <x>970</x>
+      <y>170</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>40</y>
-      <width>61</width>
-      <height>10</height>
+      <x>970</x>
+      <y>60</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Baudrate</string>
@@ -93,11 +98,16 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>80</y>
-      <width>61</width>
-      <height>10</height>
+      <x>970</x>
+      <y>140</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Data Size</string>
@@ -106,11 +116,16 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>120</y>
-      <width>61</width>
-      <height>10</height>
+      <x>970</x>
+      <y>220</y>
+      <width>111</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Parity</string>
@@ -119,21 +134,26 @@
    <widget class="QComboBox" name="comboBox_4">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>130</y>
-      <width>81</width>
-      <height>16</height>
+      <x>970</x>
+      <y>250</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>160</y>
+      <x>970</x>
+      <y>680</y>
       <width>81</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>+CR</string>
@@ -142,11 +162,16 @@
    <widget class="QCheckBox" name="checkBox_2">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>180</y>
+      <x>970</x>
+      <y>710</y>
       <width>81</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>+LF</string>
@@ -156,9 +181,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>240</y>
-      <width>291</width>
-      <height>21</height>
+      <y>690</y>
+      <width>941</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -171,8 +196,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>408</width>
-     <height>18</height>
+     <width>1114</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
