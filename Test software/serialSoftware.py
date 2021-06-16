@@ -1,8 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import serial
+import glob
 
 global serialPort
-serialPort = serial.Serial(port="COM4", baudrate=115200)
+global openFlag
+
+openFlag = False
 
 # Used to store data coming over UART
 global serialString
@@ -18,7 +21,7 @@ class Ui_MainWindow(object):
 
         # ComboBox to ComPort
         self.comboBox_ComPort = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox_ComPort.setGeometry(QtCore.QRect(190, 10, 531, 41))
+        self.comboBox_ComPort.setGeometry(QtCore.QRect(290, 10, 300, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.comboBox_ComPort.setFont(font)
@@ -26,7 +29,7 @@ class Ui_MainWindow(object):
 
         # Button to Open/Close the ComPort communication
         self.btn_OpenClosePort = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_OpenClosePort.setGeometry(QtCore.QRect(740, 10, 131, 41))
+        self.btn_OpenClosePort.setGeometry(QtCore.QRect(640, 10, 131, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.btn_OpenClosePort.setFont(font)
@@ -68,6 +71,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.btn_Send.setFont(font)
         self.btn_Send.setObjectName("btn_Send")
+        self.btn_Send.setDisabled(True)
 
         # Field to receive the data
         self.text_Receive = QtWidgets.QTextBrowser(self.centralwidget)
@@ -138,19 +142,99 @@ class Ui_MainWindow(object):
         self.checkBox_LF.setText(_translate("MainWindow", "+LF"))
         self.btn_Send.setText(_translate("MainWindow", "Send"))
 
-        self.comboBox_ComPort.addItem("COM10")
+        # Connect the click event to the button Open
+        self.btn_OpenClosePort.clicked.connect(self.openClicked)
 
         # Connect the click event to the button Send
         self.btn_Send.clicked.connect(self.sendClicked)
 
+        for x in self.serial_ports():
+            self.comboBox_ComPort.addItem(x)
+
+    # Function when button Open is clicked
+    def openClicked(self):
+        global openFlag
+        global serialPort
+
+        if openFlag == False:
+            getComPort = self.comboBox_ComPort.currentText()
+            getBaudRate = int(self.comboBox_BaudRate.currentText())
+            getDataSize = int(self.comboBox_DataSize.currentText())
+            getParity = self.comboBox_Parity.currentText()
+            if getParity == "":
+                par = "N"
+            elif getParity == "Odd":
+                par = "O"
+            else:
+                par = "E"
+            serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
+
+            # Disable the ComboBoxes
+            self.comboBox_ComPort.setDisabled(True)
+            self.comboBox_BaudRate.setDisabled(True)
+            self.comboBox_DataSize.setDisabled(True)
+            self.comboBox_Parity.setDisabled(True)
+
+            # Enable the Send button
+            self.btn_Send.setDisabled(False)
+
+            self.btn_OpenClosePort.setText("Close")
+
+            openFlag = True
+        else:
+            serialPort.close()
+            # Enable the ComboBoxes
+            self.comboBox_ComPort.setDisabled(False)
+            self.comboBox_BaudRate.setDisabled(False)
+            self.comboBox_DataSize.setDisabled(False)
+            self.comboBox_Parity.setDisabled(False)
+
+            # Disable the Send button
+            self.btn_Send.setDisabled(True)
+
+            self.btn_OpenClosePort.setText("Open")
+
+            openFlag = False
 
 
-    # Function when button is clicked
+    # Function when button Send is clicked
     def sendClicked(self):
         mytext = self.text_Send.toPlainText()
-        serialPort.write(mytext.encode())
+
+        if self.checkBox_CR.isChecked() and not self.checkBox_LF.isChecked():
+            serialPort.write(mytext.encode())
+            serialPort.write(b'\r')
+        elif not self.checkBox_CR.isChecked() and self.checkBox_LF.isChecked():
+            serialPort.write(mytext.encode())
+            serialPort.write(b'\n')
+        elif self.checkBox_CR.isChecked() or self.checkBox_LF.isChecked():
+            serialPort.write(mytext.encode())
+            serialPort.write(b'\r\n')
+        else:
+            serialPort.write(mytext.encode())
 
 
+    # Function to show the ComPorts available
+    def serial_ports(self):
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        return result
 
 if __name__ == "__main__":
     import sys
