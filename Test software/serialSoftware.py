@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import serial
 
 global serialPort
-serialPort = serial.Serial(port="COM4", baudrate=115200)
+#serialPort = serial.Serial(port="COM10", baudrate=115200)
 
 # Used to store data coming over UART
 global serialString
@@ -138,8 +138,12 @@ class Ui_MainWindow(object):
         self.checkBox_LF.setText(_translate("MainWindow", "+LF"))
         self.btn_Send.setText(_translate("MainWindow", "Send"))
 
+        self.comboBox_ComPort.addItem("COM10")
+
         # Connect the click event to the button Send
         self.btn_Send.clicked.connect(self.sendClicked)
+
+
 
     # Function when button is clicked
     def sendClicked(self):
