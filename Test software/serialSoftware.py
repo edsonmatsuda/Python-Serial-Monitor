@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import serial
 
 global serialPort
-#serialPort = serial.Serial(port="COM10", baudrate=115200)
+serialPort = serial.Serial(port="COM4", baudrate=115200)
 
 # Used to store data coming over UART
 global serialString
