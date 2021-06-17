@@ -1,6 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QTimer, QTime, Qt
 import serial
 import glob
+import io
 
 global serialPort
 global openFlag
@@ -131,6 +133,9 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.receiveData)
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -148,6 +153,7 @@ class Ui_MainWindow(object):
         # Connect the click event to the button Send
         self.btn_Send.clicked.connect(self.sendClicked)
 
+        # Check which ComPorts are available
         for x in self.serial_ports():
             self.comboBox_ComPort.addItem(x)
 
@@ -169,6 +175,8 @@ class Ui_MainWindow(object):
                 par = "E"
             serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
 
+            self.timer.start(500)
+
             # Disable the ComboBoxes
             self.comboBox_ComPort.setDisabled(True)
             self.comboBox_BaudRate.setDisabled(True)
@@ -181,7 +189,9 @@ class Ui_MainWindow(object):
             self.btn_OpenClosePort.setText("Close")
 
             openFlag = True
+
         else:
+            self.timer.stop()
             serialPort.close()
             # Enable the ComboBoxes
             self.comboBox_ComPort.setDisabled(False)
@@ -235,6 +245,17 @@ class Ui_MainWindow(object):
             except (OSError, serial.SerialException):
                 pass
         return result
+
+    # Function to receive the data
+    def receiveData(self):
+        if (serialPort.in_waiting > 0):
+            #serialString = serialPort.read()
+            #print(str(serialString).split("'"))
+            serialString = serialPort.readline()
+            print(serialString.decode())
+
+            #serialString = serialPort.readline()
+            #self.text_Receive.append(serialString.decode('Ascii'))
 
 if __name__ == "__main__":
     import sys
