@@ -252,7 +252,7 @@ class Ui_MainWindow(object):
             #serialString = serialPort.read()
             #print(str(serialString).split("'"))
             serialString = serialPort.readline()
-            print(serialString.decode())
+            self.text_Receive.append(str(serialString)[2:-1])
 
             #serialString = serialPort.readline()
             #self.text_Receive.append(serialString.decode('Ascii'))
