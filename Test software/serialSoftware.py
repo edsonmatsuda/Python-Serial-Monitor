@@ -1,18 +1,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, QTime, Qt
+from PyQt5.QtCore import QTimer
 import serial
 import glob
-import io
 
 global serialPort
-global openFlag
 
+# Used to check if the ComPort is open
+global openFlag
 openFlag = False
 
 # Used to store data coming over UART
 global serialString
+global mainString
 serialString = ""
-
+mainString = ""
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -80,6 +81,14 @@ class Ui_MainWindow(object):
         self.text_Receive.setGeometry(QtCore.QRect(10, 70, 941, 301))
         self.text_Receive.setObjectName("text_Receive")
 
+        # Button to clear the text from received field
+        self.btn_Clear = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_Clear.setGeometry(QtCore.QRect(970, 330, 121, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.btn_Clear.setFont(font)
+        self.btn_Clear.setObjectName("btn_Clear")
+
         # Field to send the data
         self.text_Send = QtWidgets.QTextEdit(self.centralwidget)
         self.text_Send.setGeometry(QtCore.QRect(10, 380, 941, 301))
@@ -133,6 +142,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        # Thread to receive data
         self.timer = QTimer()
         self.timer.timeout.connect(self.receiveData)
 
@@ -146,12 +156,16 @@ class Ui_MainWindow(object):
         self.checkBox_CR.setText(_translate("MainWindow", "+CR"))
         self.checkBox_LF.setText(_translate("MainWindow", "+LF"))
         self.btn_Send.setText(_translate("MainWindow", "Send"))
+        self.btn_Clear.setText(_translate("MainWindow", "Clear"))
 
         # Connect the click event to the button Open
         self.btn_OpenClosePort.clicked.connect(self.openClicked)
 
         # Connect the click event to the button Send
         self.btn_Send.clicked.connect(self.sendClicked)
+
+        # Connect the click event to the button Clear
+        self.btn_Clear.clicked.connect(self.clearText)
 
         # Check which ComPorts are available
         for x in self.serial_ports():
@@ -163,6 +177,7 @@ class Ui_MainWindow(object):
         global serialPort
 
         if openFlag == False:
+            # Capture the information from the combo boxes
             getComPort = self.comboBox_ComPort.currentText()
             getBaudRate = int(self.comboBox_BaudRate.currentText())
             getDataSize = int(self.comboBox_DataSize.currentText())
@@ -175,7 +190,8 @@ class Ui_MainWindow(object):
                 par = "E"
             serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
 
-            self.timer.start(500)
+            # Start the thread to receive data
+            self.timer.start(10)
 
             # Disable the ComboBoxes
             self.comboBox_ComPort.setDisabled(True)
@@ -186,13 +202,18 @@ class Ui_MainWindow(object):
             # Enable the Send button
             self.btn_Send.setDisabled(False)
 
+            # Change the text of Open/Close button to Close
             self.btn_OpenClosePort.setText("Close")
 
             openFlag = True
 
         else:
+            # Stop the thread to receive data
             self.timer.stop()
+
+            # Close the port communication
             serialPort.close()
+
             # Enable the ComboBoxes
             self.comboBox_ComPort.setDisabled(False)
             self.comboBox_BaudRate.setDisabled(False)
@@ -202,6 +223,7 @@ class Ui_MainWindow(object):
             # Disable the Send button
             self.btn_Send.setDisabled(True)
 
+            # Change the text of Open/Close button to Open
             self.btn_OpenClosePort.setText("Open")
 
             openFlag = False
@@ -211,6 +233,7 @@ class Ui_MainWindow(object):
     def sendClicked(self):
         mytext = self.text_Send.toPlainText()
 
+        # Logic to check if the CR (Carriage return) and/or LF (New line) are ticked
         if self.checkBox_CR.isChecked() and not self.checkBox_LF.isChecked():
             serialPort.write(mytext.encode())
             serialPort.write(b'\r')
@@ -248,14 +271,27 @@ class Ui_MainWindow(object):
 
     # Function to receive the data
     def receiveData(self):
-        if (serialPort.in_waiting > 0):
-            #serialString = serialPort.read()
-            #print(str(serialString).split("'"))
-            serialString = serialPort.readline()
-            self.text_Receive.append(str(serialString)[2:-1])
+        global mainString
 
-            #serialString = serialPort.readline()
-            #self.text_Receive.append(serialString.decode('Ascii'))
+        # Check if there is any data available on the ComPort
+        if (serialPort.in_waiting > 0):
+
+            #This part of the code can be used if the intention is to show the string after the character \n (New line) is used
+            '''
+            serialString = serialPort.readline()
+            self.text_Receive.append(serialString.decode('Ascii'))
+            '''
+
+            # This logic shows all the characters, including \r (Carriage return) and \n (New line)
+            serialString = serialPort.read()
+            mainString = mainString + str(serialString)[2:-1]
+            if(serialPort.in_waiting == 0):
+                self.text_Receive.append(mainString)
+                mainString = ""
+
+    # Function to clear the text from received data field
+    def clearText(self):
+        self.text_Receive.clear()
 
 if __name__ == "__main__":
     import sys
