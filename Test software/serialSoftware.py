@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QMessageBox
 import serial
 import glob
 
@@ -62,7 +63,7 @@ class Ui_MainWindow(object):
         self.comboBox_Parity = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox_Parity.setGeometry(QtCore.QRect(970, 250, 121, 31))
         self.comboBox_Parity.setObjectName("comboBox_Parity")
-        self.comboBox_Parity.addItem("")
+        self.comboBox_Parity.addItem("None")
         self.comboBox_Parity.addItem("Odd")
         self.comboBox_Parity.addItem("Even")
         self.comboBox_Parity.setCurrentIndex(0)
@@ -177,35 +178,41 @@ class Ui_MainWindow(object):
         global serialPort
 
         if openFlag == False:
-            # Capture the information from the combo boxes
-            getComPort = self.comboBox_ComPort.currentText()
-            getBaudRate = int(self.comboBox_BaudRate.currentText())
-            getDataSize = int(self.comboBox_DataSize.currentText())
-            getParity = self.comboBox_Parity.currentText()
-            if getParity == "":
-                par = "N"
-            elif getParity == "Odd":
-                par = "O"
-            else:
-                par = "E"
-            serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
 
-            # Start the thread to receive data
-            self.timer.start(10)
+            try:
+                # Capture the information from the combo boxes
+                getComPort = self.comboBox_ComPort.currentText()
+                getBaudRate = int(self.comboBox_BaudRate.currentText())
+                getDataSize = int(self.comboBox_DataSize.currentText())
+                getParity = self.comboBox_Parity.currentText()
+                if getParity == "None":
+                    par = "N"
+                elif getParity == "Odd":
+                    par = "O"
+                else:
+                    par = "E"
 
-            # Disable the ComboBoxes
-            self.comboBox_ComPort.setDisabled(True)
-            self.comboBox_BaudRate.setDisabled(True)
-            self.comboBox_DataSize.setDisabled(True)
-            self.comboBox_Parity.setDisabled(True)
+                serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
 
-            # Enable the Send button
-            self.btn_Send.setDisabled(False)
+                # Start the thread to receive data
+                self.timer.start(10)
 
-            # Change the text of Open/Close button to Close
-            self.btn_OpenClosePort.setText("Close")
+                # Disable the ComboBoxes
+                self.comboBox_ComPort.setDisabled(True)
+                self.comboBox_BaudRate.setDisabled(True)
+                self.comboBox_DataSize.setDisabled(True)
+                self.comboBox_Parity.setDisabled(True)
 
-            openFlag = True
+                # Enable the Send button
+                self.btn_Send.setDisabled(False)
+
+                # Change the text of Open/Close button to Close
+                self.btn_OpenClosePort.setText("Close")
+
+                openFlag = True
+
+            except:
+                self.comPortNotAvailable()
 
         else:
             # Stop the thread to receive data
@@ -274,7 +281,7 @@ class Ui_MainWindow(object):
         global mainString
 
         # Check if there is any data available on the ComPort
-        if (serialPort.in_waiting > 0):
+        if serialPort.in_waiting > 0:
 
             #This part of the code can be used if the intention is to show the string after the character \n (New line) is used
             '''
@@ -285,13 +292,31 @@ class Ui_MainWindow(object):
             # This logic shows all the characters, including \r (Carriage return) and \n (New line)
             serialString = serialPort.read()
             mainString = mainString + str(serialString)[2:-1]
-            if(serialPort.in_waiting == 0):
+            if serialPort.in_waiting == 0:
                 self.text_Receive.append(mainString)
                 mainString = ""
 
     # Function to clear the text from received data field
     def clearText(self):
         self.text_Receive.clear()
+
+    # Function when the COM Port is not available
+    def comPortNotAvailable(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Error!")
+        msg.setText("COM Port not available.")
+        msg.setIcon(QMessageBox.Critical)
+        msg.setStandardButtons(QMessageBox.Retry | QMessageBox.Cancel)
+
+        msg.buttonClicked.connect(self.retry)
+
+        msg.exec_()
+
+    # Function to retry to open the COM Port
+    def retry(self, i):
+        if i.text() == "Retry":
+            self.openClicked()
+
 
 if __name__ == "__main__":
     import sys
