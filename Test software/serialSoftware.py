@@ -324,8 +324,10 @@ class Ui_MainWindow(object):
         global freezeFlag
         if freezeFlag == False:
             freezeFlag = True
+            self.btn_Freeze.setStyleSheet("background-color : #66B2FF")
         else:
             freezeFlag = False
+            self.btn_Freeze.setStyleSheet("background-color : ")
 
     # Function when the COM Port is not available
     def comPortNotAvailable(self):
