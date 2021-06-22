@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Serial Software</string>
+   <string>Serial Software with Python</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QComboBox" name="comboBox_ComPort">

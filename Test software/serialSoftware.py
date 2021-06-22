@@ -161,7 +161,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Serial Software"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Serial Software with Python"))
         self.btn_OpenClosePort.setText(_translate("MainWindow", "Open"))
         self.label_3.setText(_translate("MainWindow", "Baudrate"))
         self.label_4.setText(_translate("MainWindow", "Data Size"))
@@ -310,13 +310,8 @@ class Ui_MainWindow(object):
                 serialString = serialPort.read()
                 mainString = mainString + str(serialString)[2:-1]
                 if serialPort.in_waiting == 0:
-                    if mainString == "n":
-                        self.text_Receive.append(mainString)
-                        print("new line")
-                    # self.text_Receive.append(mainString)
-                    # mainString = ""
-                    else:
-                        self.text_Receive.setText(mainString)
+                    self.text_Receive.append(mainString)
+                    mainString = ""
 
     # Function to clear the text from received data field
     def clearText(self):
@@ -324,6 +319,7 @@ class Ui_MainWindow(object):
         mainString = ""
         self.text_Receive.clear()
 
+    # Function to freeze the data been received
     def freeze(self):
         global freezeFlag
         if freezeFlag == False:
