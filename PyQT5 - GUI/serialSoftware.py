@@ -106,7 +106,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Serial Software"))
         self.btn_OpenClosePort.setText(_translate("MainWindow", "Open"))
         self.label_3.setText(_translate("MainWindow", "Baudrate"))
         self.label_4.setText(_translate("MainWindow", "Data Size"))

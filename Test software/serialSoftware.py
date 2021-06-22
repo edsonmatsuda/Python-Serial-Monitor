@@ -10,6 +10,10 @@ global serialPort
 global openFlag
 openFlag = False
 
+# Used to freeze the text been received
+global freezeFlag
+freezeFlag = False
+
 # Used to store data coming over UART
 global serialString
 global mainString
@@ -90,6 +94,14 @@ class Ui_MainWindow(object):
         self.btn_Clear.setFont(font)
         self.btn_Clear.setObjectName("btn_Clear")
 
+        # Button to freeze the text been received
+        self.btn_Freeze = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_Freeze.setGeometry(QtCore.QRect(970, 380, 121, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.btn_Freeze.setFont(font)
+        self.btn_Freeze.setObjectName("btn_Freeze")
+
         # Field to send the data
         self.text_Send = QtWidgets.QTextEdit(self.centralwidget)
         self.text_Send.setGeometry(QtCore.QRect(10, 380, 941, 301))
@@ -149,7 +161,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Serial Software"))
         self.btn_OpenClosePort.setText(_translate("MainWindow", "Open"))
         self.label_3.setText(_translate("MainWindow", "Baudrate"))
         self.label_4.setText(_translate("MainWindow", "Data Size"))
@@ -158,6 +170,7 @@ class Ui_MainWindow(object):
         self.checkBox_LF.setText(_translate("MainWindow", "+LF"))
         self.btn_Send.setText(_translate("MainWindow", "Send"))
         self.btn_Clear.setText(_translate("MainWindow", "Clear"))
+        self.btn_Freeze.setText(_translate("MainWindow", "Freeze"))
 
         # Connect the click event to the button Open
         self.btn_OpenClosePort.clicked.connect(self.openClicked)
@@ -167,6 +180,9 @@ class Ui_MainWindow(object):
 
         # Connect the click event to the button Clear
         self.btn_Clear.clicked.connect(self.clearText)
+
+        # Connect the click event to the button Freeze
+        self.btn_Freeze.clicked.connect(self.freeze)
 
         # Check which ComPorts are available
         for x in self.serial_ports():
@@ -282,23 +298,38 @@ class Ui_MainWindow(object):
 
         # Check if there is any data available on the ComPort
         if serialPort.in_waiting > 0:
+            if freezeFlag == False:
 
-            #This part of the code can be used if the intention is to show the string after the character \n (New line) is used
-            '''
-            serialString = serialPort.readline()
-            self.text_Receive.append(serialString.decode('Ascii'))
-            '''
+                #This part of the code can be used if the intention is to show the string after the character \n (New line) is used
+                '''
+                serialString = serialPort.readline()
+                self.text_Receive.append(serialString.decode('Ascii'))
+                '''
 
-            # This logic shows all the characters, including \r (Carriage return) and \n (New line)
-            serialString = serialPort.read()
-            mainString = mainString + str(serialString)[2:-1]
-            if serialPort.in_waiting == 0:
-                self.text_Receive.append(mainString)
-                mainString = ""
+                # This logic shows all the characters, including \r (Carriage return) and \n (New line)
+                serialString = serialPort.read()
+                mainString = mainString + str(serialString)[2:-1]
+                if serialPort.in_waiting == 0:
+                    if mainString == "n":
+                        self.text_Receive.append(mainString)
+                        print("new line")
+                    # self.text_Receive.append(mainString)
+                    # mainString = ""
+                    else:
+                        self.text_Receive.setText(mainString)
 
     # Function to clear the text from received data field
     def clearText(self):
+        global mainString
+        mainString = ""
         self.text_Receive.clear()
+
+    def freeze(self):
+        global freezeFlag
+        if freezeFlag == False:
+            freezeFlag = True
+        else:
+            freezeFlag = False
 
     # Function when the COM Port is not available
     def comPortNotAvailable(self):
