@@ -241,6 +241,24 @@
      <string>Freeze</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_Repeat">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>620</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Repeat</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 import serial
 import glob
 
+# Used for the Serial Port
 global serialPort
 
 # Used to check if the ComPort is open
@@ -13,6 +14,15 @@ openFlag = False
 # Used to freeze the text been received
 global freezeFlag
 freezeFlag = False
+
+# Used to repeat the text been sent
+global repeatFlag
+global repeatOn
+global timerToSend
+
+repeatFlag = False
+repeatOn = False
+timerToSend = 0
 
 # Used to store data coming over UART
 global serialString
@@ -102,6 +112,15 @@ class Ui_MainWindow(object):
         self.btn_Freeze.setFont(font)
         self.btn_Freeze.setObjectName("btn_Freeze")
 
+        # Button to Repeat the text been sent
+        self.btn_Repeat = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_Repeat.setGeometry(QtCore.QRect(970, 620, 121, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.btn_Repeat.setFont(font)
+        self.btn_Repeat.setObjectName("btn_Repeat")
+        self.btn_Repeat.setDisabled(True)
+
         # Field to send the data
         self.text_Send = QtWidgets.QTextEdit(self.centralwidget)
         self.text_Send.setGeometry(QtCore.QRect(10, 380, 941, 301))
@@ -156,8 +175,9 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         # Thread to receive data
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.receiveData)
+        self.timerReceive = QTimer()
+        self.timerReceive.timeout.connect(self.receiveData)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -171,6 +191,7 @@ class Ui_MainWindow(object):
         self.btn_Send.setText(_translate("MainWindow", "Send"))
         self.btn_Clear.setText(_translate("MainWindow", "Clear"))
         self.btn_Freeze.setText(_translate("MainWindow", "Freeze"))
+        self.btn_Repeat.setText(_translate("MainWindow", "Repeat"))
 
         # Connect the click event to the button Open
         self.btn_OpenClosePort.clicked.connect(self.openClicked)
@@ -184,6 +205,9 @@ class Ui_MainWindow(object):
         # Connect the click event to the button Freeze
         self.btn_Freeze.clicked.connect(self.freeze)
 
+        # Connect the click event to the button Repeat
+        self.btn_Repeat.clicked.connect(self.repeat)
+
         # Check which ComPorts are available
         for x in self.serial_ports():
             self.comboBox_ComPort.addItem(x)
@@ -192,6 +216,9 @@ class Ui_MainWindow(object):
     def openClicked(self):
         global openFlag
         global serialPort
+        global freezeFlag
+        global repeatFlag
+        global repeatOn
 
         if openFlag == False:
 
@@ -211,7 +238,7 @@ class Ui_MainWindow(object):
                 serialPort = serial.Serial(port=getComPort, baudrate=getBaudRate, bytesize=getDataSize, parity=par)
 
                 # Start the thread to receive data
-                self.timer.start(10)
+                self.timerReceive.start(10)
 
                 # Disable the ComboBoxes
                 self.comboBox_ComPort.setDisabled(True)
@@ -221,6 +248,9 @@ class Ui_MainWindow(object):
 
                 # Enable the Send button
                 self.btn_Send.setDisabled(False)
+
+                # Enable the Repeat button
+                self.btn_Repeat.setDisabled(False)
 
                 # Change the text of Open/Close button to Close
                 self.btn_OpenClosePort.setText("Close")
@@ -232,7 +262,7 @@ class Ui_MainWindow(object):
 
         else:
             # Stop the thread to receive data
-            self.timer.stop()
+            self.timerReceive.stop()
 
             # Close the port communication
             serialPort.close()
@@ -243,8 +273,23 @@ class Ui_MainWindow(object):
             self.comboBox_DataSize.setDisabled(False)
             self.comboBox_Parity.setDisabled(False)
 
+            # Enable the CheckBoxes
+            self.checkBox_CR.setDisabled(False)
+            self.checkBox_LF.setDisabled(False)
+
             # Disable the Send button
             self.btn_Send.setDisabled(True)
+
+            # Disable the freeze button
+            freezeFlag = False
+            self.btn_Freeze.setStyleSheet("background-color : ")
+
+            # Disable the Repeat button
+            self.btn_Repeat.setDisabled(True)
+            self.btn_Repeat.setText("Repeat")
+            self.btn_Repeat.setStyleSheet("background-color : ")
+            repeatFlag = False
+            repeatOn = False
 
             # Change the text of Open/Close button to Open
             self.btn_OpenClosePort.setText("Open")
@@ -292,9 +337,12 @@ class Ui_MainWindow(object):
                 pass
         return result
 
+
     # Function to receive the data
     def receiveData(self):
         global mainString
+        global repeatOn
+        global timerToSend
 
         # Check if there is any data available on the ComPort
         if serialPort.in_waiting > 0:
@@ -313,11 +361,28 @@ class Ui_MainWindow(object):
                     self.text_Receive.append(mainString)
                     mainString = ""
 
+        '''This is a workaround to not use multiples Threads'''
+        # If Repeat button is on, it will send the text every 1 second
+        if repeatOn == True:
+            timerToSend += 10
+
+            # This part will make the Repeat button to flash every 0.5 second
+            if timerToSend == 500:
+                self.btn_Repeat.setStyleSheet("background-color : #E60000")
+            elif timerToSend == 1000:
+                self.btn_Repeat.setStyleSheet("background-color : ")
+
+                # Send the text and restart the timer
+                self.sendClicked()
+                timerToSend = 0
+
+
     # Function to clear the text from received data field
     def clearText(self):
         global mainString
         mainString = ""
         self.text_Receive.clear()
+
 
     # Function to freeze the data been received
     def freeze(self):
@@ -328,6 +393,30 @@ class Ui_MainWindow(object):
         else:
             freezeFlag = False
             self.btn_Freeze.setStyleSheet("background-color : ")
+
+
+    # Function to repeat the text been sent
+    def repeat(self):
+        global repeatFlag
+        global repeatOn
+
+        if repeatFlag == False:
+            repeatFlag = True
+            repeatOn = True
+            self.btn_Repeat.setText("Stop Repeat")
+            self.btn_Send.setDisabled(True)
+            self.checkBox_CR.setDisabled(True)
+            self.checkBox_LF.setDisabled(True)
+
+        else:
+            repeatFlag = False
+            repeatOn = False
+            self.btn_Repeat.setStyleSheet("background-color : ")
+            self.btn_Repeat.setText("Repeat")
+            self.btn_Send.setDisabled(False)
+            self.checkBox_CR.setDisabled(False)
+            self.checkBox_LF.setDisabled(False)
+
 
     # Function when the COM Port is not available
     def comPortNotAvailable(self):
@@ -340,6 +429,7 @@ class Ui_MainWindow(object):
         msg.buttonClicked.connect(self.retry)
 
         msg.exec_()
+
 
     # Function to retry to open the COM Port
     def retry(self, i):
