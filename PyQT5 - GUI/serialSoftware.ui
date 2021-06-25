@@ -25,7 +25,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
    </widget>
@@ -40,7 +43,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -56,6 +62,12 @@
       <height>301</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
    </widget>
    <widget class="QTextEdit" name="text_Send">
     <property name="geometry">
@@ -65,6 +77,12 @@
       <width>941</width>
       <height>301</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+     </font>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox_BaudRate">
@@ -76,6 +94,13 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
    </widget>
    <widget class="QComboBox" name="comboBox_DataSize">
     <property name="geometry">
@@ -85,6 +110,13 @@
       <width>121</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -98,7 +130,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -116,7 +151,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -134,7 +172,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -150,19 +191,29 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_CR">
     <property name="geometry">
      <rect>
       <x>970</x>
-      <y>680</y>
+      <y>684</y>
       <width>81</width>
-      <height>16</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -175,12 +226,15 @@
       <x>970</x>
       <y>710</y>
       <width>81</width>
-      <height>16</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -198,7 +252,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -216,7 +273,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -234,7 +294,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -252,7 +315,10 @@
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
