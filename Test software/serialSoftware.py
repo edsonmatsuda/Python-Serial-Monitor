@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMessageBox
+from datetime import datetime
 import serial
 import glob
 
@@ -14,6 +15,10 @@ openFlag = False
 # Used to freeze the text been received
 global freezeFlag
 freezeFlag = False
+
+# Used for saving the file
+global saveCounter
+saveCounter = 1
 
 # Used to repeat the text been sent
 global repeatFlag
@@ -146,6 +151,17 @@ class Ui_MainWindow(object):
         self.btn_Freeze.setFont(font)
         self.btn_Freeze.setObjectName("btn_Freeze")
 
+        # Button to save the text received
+        self.btn_Save = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_Save.setGeometry(QtCore.QRect(970, 430, 121, 41))
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.btn_Save.setFont(font)
+        self.btn_Save.setObjectName("btn_Save")
+
         # Button to Repeat the text been sent
         self.btn_Repeat = QtWidgets.QPushButton(self.centralwidget)
         self.btn_Repeat.setGeometry(QtCore.QRect(970, 620, 121, 41))
@@ -248,6 +264,7 @@ class Ui_MainWindow(object):
         self.btn_Clear.setText(_translate("MainWindow", "Clear"))
         self.btn_Freeze.setText(_translate("MainWindow", "Freeze"))
         self.btn_Repeat.setText(_translate("MainWindow", "Repeat"))
+        self.btn_Save.setText(_translate("MainWindow", "Save"))
 
         # Connect the click event to the button Open
         self.btn_OpenClosePort.clicked.connect(self.openClicked)
@@ -260,6 +277,9 @@ class Ui_MainWindow(object):
 
         # Connect the click event to the button Freeze
         self.btn_Freeze.clicked.connect(self.freeze)
+
+        # Connect the click event to the button Save
+        self.btn_Save.clicked.connect(self.save)
 
         # Connect the click event to the button Repeat
         self.btn_Repeat.clicked.connect(self.repeat)
@@ -449,6 +469,29 @@ class Ui_MainWindow(object):
         else:
             freezeFlag = False
             self.btn_Freeze.setStyleSheet("background-color : ")
+
+
+    # Function to freeze the data been received
+    def save(self):
+        global saveCounter
+        savedMsg = QMessageBox()
+
+        dateTimeObj = datetime.now()
+        timestampStr = str('Captured {} - {}.txt'.format(dateTimeObj.strftime("%d-%b-%Y"), saveCounter))
+
+        savedMsg.setWindowTitle("File Created")
+        savedMsg.setText("File {} was created".format(timestampStr))
+        savedMsg.setIcon(QMessageBox.Information)
+        try:
+            savedtext = self.text_Receive.toPlainText()
+            file = open(timestampStr, "a")
+            file.write(savedtext)
+            file.close()
+
+            savedMsg.exec_()
+        except:
+            print('Error saying the file')
+        saveCounter += 1
 
 
     # Function to repeat the text been sent
