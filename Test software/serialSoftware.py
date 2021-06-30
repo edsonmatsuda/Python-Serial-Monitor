@@ -490,7 +490,7 @@ class Ui_MainWindow(object):
 
             savedMsg.exec_()
         except:
-            print('Error saying the file')
+            print('Error saving the file')
         saveCounter += 1
 
 
